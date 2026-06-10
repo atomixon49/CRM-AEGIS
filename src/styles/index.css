@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 800px at -10% -10%, #25324a 0%, transparent 60%),
+    radial-gradient(900px 600px at 110% 20%, #1a2b38 0%, transparent 60%),
+    #0b0f14;
+}
+
+* { box-sizing: border-box; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; }
