@@ -2,6 +2,18 @@ import { useEffect, useRef, useState } from 'react'
 
 const HISTORY_KEY = 'aegis_ai_chat_history'
 
+async function sendAI(sessionId, text) {
+  const base = import.meta.env.VITE_AI_CHAT_URL || 'http://127.0.0.1:6543/ai/chat'
+  const res = await fetch(base, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ session_id: sessionId, message: text }),
+  })
+  if (!res.ok) throw new Error(`Error ${res.status}`)
+  const data = await res.json()
+  return data.reply
+}
+
 export default function Asistente() {
   const [messages, setMessages] = useState(() => {
     try {
@@ -15,6 +27,7 @@ export default function Asistente() {
   })
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [sessionId] = useState(() => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()))
   const listRef = useRef(null)
 
   useEffect(() => {
@@ -34,7 +47,7 @@ export default function Asistente() {
     setMessages(prev => [...prev, { role: 'user', content: text }])
     setLoading(true)
     try {
-      const reply = await simulateAI(text)
+      const reply = await sendAI(sessionId, text)
       setMessages(prev => [...prev, { role: 'assistant', content: reply }])
     } catch (e) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Ocurrió un error: ${e.message}` }])
@@ -92,15 +105,4 @@ export default function Asistente() {
       </div>
     </div>
   )
-}
-
-async function simulateAI(text) {
-  await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 700))
-  const lower = text.toLowerCase()
-  if (lower.includes('lead') || lower.includes('empresa')) return 'Para Leads podés filtrar por sector o estado en la sección Leads. Si necesitás crear uno nuevo, usá el formulario superior.'
-  if (lower.includes('negocio') || lower.includes('venta')) return 'Los negocios abiertos los ves en Negocios. Podés asignar responsable, etapa y valor para priorizar.'
-  if (lower.includes('tarea')) return 'En Tareas podés registrar llamados, reuniones o envíos de cotización con fecha de vencimiento.'
-  if (lower.includes('campaña') || lower.includes('whatsapp') || lower.includes('email')) return 'Las campañas disponibles son por WhatsApp o email. Podés segmentar por contactos y medir apertura.'
-  if (lower.includes('resumen') || lower.includes('estado')) return 'Dashboard muestra KPIs y barra de pipeline. Te recomiendo revisar Negocios y Tareas a diario.'
-  return 'Podés Consultarme por leads, negocios, tareas, campañas o dashboard. Si querés, te ayudo a generar un resumen operativo del día.'
 }
