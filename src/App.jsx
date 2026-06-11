@@ -9,6 +9,7 @@ import Contactos from './pages/Contactos'
 import Negocios from './pages/Negocios'
 import Tareas from './pages/Tareas'
 import Campanas from './pages/Campanas'
+import Asistente from './pages/Asistente'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="negocios" element={<Negocios />} />
           <Route path="tareas" element={<Tareas />} />
           <Route path="campanas" element={<Campanas />} />
+          <Route path="asistente" element={<Asistente />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
