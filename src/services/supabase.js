@@ -1,14 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = 'https://adingsvcqljyiyuyihdn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_6htqXQ8FA4fa2GVlm_wqDQ_b731g6Qv';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
 });
 
 export async function signIn(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+export async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
   return data;
 }
@@ -23,16 +33,21 @@ export async function getSession() {
   return data.session;
 }
 
-export async function fetchAll(session, table, query = (q) => q, options = {}) {
-  let q = supabase.from(table).select('*');
-  q = query(q);
+export async function fetchRows(table, query = (q) => q) {
+  const q = query(supabase.from(table).select('*'));
   const { data, error } = await q;
   if (error) throw error;
   return data ?? [];
 }
 
-export async function insertRow(session, table, payload) {
+export async function insertRow(table, payload) {
   const { data, error } = await supabase.from(table).insert([payload]).select('*').single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateRow(table, id, payload) {
+  const { data, error } = await supabase.from(table).update(payload).eq('id', id).select('*').single();
   if (error) throw error;
   return data;
 }

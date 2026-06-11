@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { getSession, signOut, signIn } from '../services/supabase'
+import { signIn, signOut, getSession } from '../services/supabase'
 
 const AuthContext = createContext(null)
 
@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getSession().then((s) => { setSession(s); setLoading(false) })
+    getSession().then((s) => { setSession(s); setLoading(false) }).catch(() => setLoading(false))
   }, [])
 
   async function login(email, password) {
